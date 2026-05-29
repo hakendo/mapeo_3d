@@ -37,19 +37,21 @@ export async function createFirstPerson(container, modelUrl) {
   scene.add(new THREE.AmbientLight(0xffffff, 0.35));
 
   // Estado
-  let yaw = Math.PI; // mirando hacia +Z (entrando al depto)
+  let yaw = Math.PI; // orientación inicial
   let pitch = 0;
-  const pos = new THREE.Vector3(2.1, EYE_HEIGHT, -3.0);
+  const pos = new THREE.Vector3();
   const bounds = new THREE.Box3();
   const collidables = [];
   const keys = { f: 0, b: 0, l: 0, r: 0 };
   const joy = { x: 0, y: 0 };
+  let floorY = 0; // altura del piso del modelo (detectada)
+  let eyeY = EYE_HEIGHT; // altura de los ojos = piso + EYE_HEIGHT
   let running = false;
   let rafId = 0;
   let lastT = 0;
 
   const raycaster = new THREE.Raycaster();
-  raycaster.far = 5;
+  raycaster.far = 100;
 
   // Cargar modelo
   await new Promise((resolve, reject) => {
@@ -61,6 +63,21 @@ export async function createFirstPerson(container, modelUrl) {
           if (o.isMesh) collidables.push(o);
         });
         bounds.setFromObject(gltf.scene);
+
+        // Detectar el piso: rayo hacia abajo desde el centro del modelo.
+        // Así la cámara queda a EYE_HEIGHT sobre el suelo real, sin importar
+        // dónde esté el origen del modelo (metros, Y arriba).
+        const center = new THREE.Vector3();
+        bounds.getCenter(center);
+        const down = new THREE.Raycaster(
+          new THREE.Vector3(center.x, bounds.max.y + 0.5, center.z),
+          new THREE.Vector3(0, -1, 0)
+        );
+        down.far = (bounds.max.y - bounds.min.y) + 1;
+        const floorHit = down.intersectObjects(collidables, true);
+        floorY = floorHit.length ? floorHit[0].point.y : bounds.min.y;
+        eyeY = floorY + EYE_HEIGHT;
+        pos.set(center.x, eyeY, center.z);
         resolve();
       },
       undefined,
@@ -74,7 +91,7 @@ export async function createFirstPerson(container, modelUrl) {
     const len = Math.hypot(dx, dz);
     if (len < 1e-5) return;
     tmpDir.set(dx, 0, dz).normalize();
-    raycaster.set(new THREE.Vector3(pos.x, COLLIDE_Y, pos.z), tmpDir);
+    raycaster.set(new THREE.Vector3(pos.x, floorY + COLLIDE_Y, pos.z), tmpDir);
     const hits = raycaster.intersectObjects(collidables, true);
     const dist = hits.length ? hits[0].distance : Infinity;
     if (dist > len + RADIUS) {
@@ -113,7 +130,7 @@ export async function createFirstPerson(container, modelUrl) {
     // Mantener dentro del recinto
     pos.x = Math.min(Math.max(pos.x, bounds.min.x + RADIUS), bounds.max.x - RADIUS);
     pos.z = Math.min(Math.max(pos.z, bounds.min.z + RADIUS), bounds.max.z - RADIUS);
-    pos.y = EYE_HEIGHT;
+    pos.y = eyeY;
     camera.position.copy(pos);
   }
 
