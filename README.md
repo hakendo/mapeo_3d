@@ -25,8 +25,10 @@ npm run preview  # sirve dist/ para probar el build
 
 La propiedad **demo** vive en `public/demo/` y se carga con `?id=demo`.
 
-> Nota: los archivos `model.glb` / `model.usdz` de la demo son **placeholders** (un cubo y un
-> astronauta de ejemplo) solo para validar el visor. Reemplázalos por tus escaneos reales.
+> Nota: el `model.glb` de la demo es un **departamento de ejemplo generado proceduralmente**
+> (piso, muros, ventanas con vidrio y muebles simples), creado con `node tools/build-apartment.mjs`.
+> Es solo web-3D (sin `model.usdz`, por lo que no muestra botón AR). Reemplázalo por tus escaneos
+> reales de Scaniverse, que sí incluyen `.usdz` para AR.
 
 ## Cómo se ve una propiedad: flujo completo
 

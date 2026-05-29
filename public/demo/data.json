@@ -1,17 +1,18 @@
 {
   "id": "demo",
-  "title": "Departamento demo — Providencia",
+  "title": "Departamento 1D/1B — Providencia",
   "model": "model.glb",
-  "iosModel": "model.usdz",
   "floorplan": "floorplan.svg",
   "rooms": [
-    { "name": "Dormitorio principal", "area": 14.2 },
-    { "name": "Living-comedor", "area": 22.0 },
-    { "name": "Cocina", "area": 9.5 }
+    { "name": "Dormitorio principal", "area": 18.5 },
+    { "name": "Living-comedor", "area": 26.0 },
+    { "name": "Cocina", "area": 8.0 },
+    { "name": "Baño", "area": 5.0 }
   ],
   "annotations": [
-    { "label": "Ventana exterior (norte)", "position": "0.5 0 0", "normal": "1 0 0" },
-    { "label": "Acceso / puerta principal", "position": "0 -0.5 0.5", "normal": "0 0 1" },
-    { "label": "Muro hacia el exterior", "position": "0 0 -0.5", "normal": "0 0 -1" }
+    { "label": "Ventana dormitorio (poniente)", "position": "-4.5 1.53 -1.7", "normal": "-1 0 0" },
+    { "label": "Ventanal del living (oriente)", "position": "4.5 1.53 0", "normal": "1 0 0" },
+    { "label": "Ventana de cocina (fondo)", "position": "-1.0 1.53 3.5", "normal": "0 0 1" },
+    { "label": "Acceso principal", "position": "2.1 1.0 -3.5", "normal": "0 0 -1" }
   ]
 }
