@@ -1,11 +1,13 @@
 import { createViewer } from './viewer.js';
 import { renderMinimap } from './minimap.js';
+import { createFirstPerson } from './firstperson.js';
 
 const app = document.getElementById('app');
 const statusEl = document.getElementById('status');
 const view3d = document.getElementById('view-3d');
+const viewFp = document.getElementById('view-fp');
 const view2d = document.getElementById('view-2d');
-const toggleBtn = document.getElementById('toggle-mode');
+const modeButtons = Array.from(document.querySelectorAll('.controls [data-mode]'));
 
 /**
  * Resuelve de dónde cargar la propiedad:
@@ -43,13 +45,36 @@ function showError(message) {
   statusEl.textContent = message;
 }
 
+// Recorrido en primera persona: se inicializa de forma diferida la primera vez.
+let fpController = null;
+let fpModelUrl = null;
+let fpLoading = false;
+
+async function ensureFirstPerson() {
+  if (fpController || fpLoading || !fpModelUrl) return;
+  fpLoading = true;
+  try {
+    fpController = await createFirstPerson(viewFp, fpModelUrl);
+  } catch (err) {
+    showError(`No se pudo iniciar el recorrido: ${err.message}`);
+  } finally {
+    fpLoading = false;
+  }
+}
+
 function setMode(mode) {
   app.dataset.mode = mode;
-  const is2d = mode === '2d';
-  view3d.hidden = is2d;
-  view2d.hidden = !is2d;
-  toggleBtn.textContent = is2d ? 'Ver en 3D' : 'Ver planta 2D';
-  toggleBtn.setAttribute('aria-pressed', String(is2d));
+  view3d.hidden = mode !== 'orbit';
+  viewFp.hidden = mode !== 'fp';
+  view2d.hidden = mode !== '2d';
+
+  modeButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+
+  if (mode === 'fp') {
+    ensureFirstPerson().then(() => fpController && fpController.start());
+  } else if (fpController) {
+    fpController.stop();
+  }
 }
 
 async function init() {
@@ -65,7 +90,10 @@ async function init() {
     return;
   }
 
-  // 3D
+  // URL del modelo para el recorrido en primera persona
+  fpModelUrl = /^https?:\/\//i.test(data.model) ? data.model : new URL(data.model, baseUrl).href;
+
+  // 3D orbital
   try {
     const viewer = createViewer(data, baseUrl);
     viewer.addEventListener('load', () => {
@@ -83,12 +111,10 @@ async function init() {
   // 2D
   renderMinimap(data, baseUrl);
 
-  // Toggle
-  toggleBtn.addEventListener('click', () => {
-    setMode(app.dataset.mode === '2d' ? '3d' : '2d');
-  });
+  // Selector de modo
+  modeButtons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
-  setMode('3d');
+  setMode('orbit');
 }
 
 init();
