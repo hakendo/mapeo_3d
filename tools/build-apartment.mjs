@@ -5,8 +5,11 @@
 // Sistema de coordenadas: X = ancho, Z = profundidad, Y = alto. El modelo se centra
 // en el origen (la planta 0..W x 0..D se traslada restando W/2 y D/2).
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
+import { NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import { dedup, prune, mergeDocuments } from '@gltf-transform/functions';
 
 // ---- Dimensiones del departamento (metros) ----
 const W = 9; // ancho (X)
@@ -92,10 +95,9 @@ addWall('x', 4, 0, 5, []);
 // Tabique vertical x=2 (z 4..7): separa baño de cocina. Puerta entre ambos.
 addWall('z', 2, 4, D, [{ a: 5.0, b: 5.9, kind: 'door' }]);
 
-// ---- Muebles (cajas simples) ----
+// ---- Muebles base (cajas; el sofá y las sillas reales se insertan después) ----
 addBox(1.3, 0.25, 1.4, 1.6, 0.5, 2.0, MAT.cama); // cama (dormitorio)
-addBox(7.0, 0.35, 1.2, 2.2, 0.7, 0.9, MAT.sofa); // sofá (living)
-addBox(7.0, 0.2, 2.6, 1.0, 0.4, 0.6, MAT.madera); // mesa de centro
+addBox(7.0, 0.2, 2.6, 1.0, 0.4, 0.6, MAT.madera); // mesa de centro (living)
 addBox(6.0, 0.375, 5.4, 1.4, 0.75, 0.8, MAT.madera); // mesa de comedor
 addBox(3.5, 0.45, 6.6, 2.6, 0.9, 0.55, MAT.cocina); // mesón de cocina
 
@@ -203,7 +205,65 @@ binChunkHdr.writeUInt32LE(0x004e4942, 4); // BIN
 
 const glb = Buffer.concat([header, jsonChunkHdr, jsonBuf, binChunkHdr, bin]);
 
+// =====================================================================
+//  Amoblado: insertar muebles reales (GLB de Khronos glTF-Sample-Assets)
+//  en la estructura procedural y optimizar (dedup de sillas repetidas).
+// =====================================================================
+
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+const apt = await io.readBinary(new Uint8Array(glb));
+const root = apt.getRoot();
+const mainScene = root.getDefaultScene() || root.listScenes()[0];
+
+const quatY = (deg) => {
+  const a = (deg * Math.PI) / 180;
+  return [0, Math.sin(a / 2), 0, Math.cos(a / 2)];
+};
+
+// Coloca un mueble (archivo en tools/furniture/) en coordenadas centradas del depto.
+async function place(file, translation, yaw = 0, scale = 1) {
+  const path = `tools/furniture/${file}`;
+  if (!existsSync(path)) {
+    throw new Error(
+      `Falta ${path}. Descárgalo de KhronosGroup/glTF-Sample-Assets ` +
+        `(Models/<Nombre>/glTF-Binary/<Nombre>.glb) a tools/furniture/.`
+    );
+  }
+  const src = await io.read(path);
+  mergeDocuments(apt, src);
+  const scenes = root.listScenes();
+  const merged = scenes[scenes.length - 1]; // la escena recién fusionada
+  const wrap = apt
+    .createNode(file.replace('.glb', ''))
+    .setTranslation(translation)
+    .setScale([scale, scale, scale])
+    .setRotation(quatY(yaw));
+  for (const child of merged.listChildren()) {
+    merged.removeChild(child);
+    wrap.addChild(child);
+  }
+  mainScene.addChild(wrap);
+  merged.dispose();
+}
+
+// Living: sofá contra el muro derecho mirando al centro
+await place('GlamVelvetSofa.glb', [3.85, 0, 0], -90);
+// Sillón individual frente al sofá
+await place('ChairDamaskPurplegold.glb', [1.8, 0, -1.3], 90);
+// Dos sillas en el comedor (la geometría se deduplica)
+await place('ChairDamaskPurplegold.glb', [1.5, 0, 1.1], 0);
+await place('ChairDamaskPurplegold.glb', [1.5, 0, 2.7], 180);
+
+await apt.transform(dedup(), prune());
+
+// GLB exige un único buffer: reasignar todos los accessors a uno y descartar el resto.
+const buffers = root.listBuffers();
+const mainBuffer = buffers[0];
+root.listAccessors().forEach((a) => a.setBuffer(mainBuffer));
+buffers.slice(1).forEach((b) => b.dispose());
+
+const finalGlb = Buffer.from(await io.writeBinary(apt));
 const out = 'public/demo/model.glb';
 mkdirSync(dirname(out), { recursive: true });
-writeFileSync(out, glb);
-console.log(`OK ${out} — ${boxes.length} cajas, ${(glb.length / 1024).toFixed(1)} kB`);
+writeFileSync(out, finalGlb);
+console.log(`OK ${out} — ${(finalGlb.length / 1024 / 1024).toFixed(2)} MB (estructura: ${boxes.length} cajas + muebles reales)`);

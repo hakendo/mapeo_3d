@@ -26,8 +26,10 @@ pnpm preview  # sirve dist/ para probar el build
 
 La propiedad **demo** vive en `public/demo/` y se carga con `?id=demo`.
 
-> Nota: el `model.glb` de la demo es un **departamento de ejemplo generado proceduralmente**
-> (piso, muros, ventanas con vidrio y muebles simples), creado con `node tools/build-apartment.mjs`.
+> Nota: el `model.glb` de la demo es un **departamento de ejemplo** — estructura generada
+> proceduralmente (piso, muros, ventanas con vidrio) **amoblada con muebles reales** (sofá y
+> sillas de KhronosGroup/glTF-Sample-Assets), creado con `node tools/build-apartment.mjs`.
+> Para regenerarlo hay que tener los GLB de los muebles en `tools/furniture/` (ver el script).
 > Es solo web-3D (sin `model.usdz`, por lo que no muestra botón AR). Reemplázalo por tus escaneos
 > reales de Scaniverse, que sí incluyen `.usdz` para AR.
 
