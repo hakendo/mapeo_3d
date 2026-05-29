@@ -16,17 +16,25 @@ const toggleBtn = document.getElementById('toggle-mode');
 function resolveSource() {
   const params = new URLSearchParams(window.location.search);
   const src = params.get('src');
-  const id = params.get('id') || 'demo';
+
+  // Saneo del id: solo el slug, sin barras, query ni fragmentos.
+  const rawId = params.get('id') || 'demo';
+  const id = rawId.split(/[/?#]/)[0] || 'demo';
 
   if (src) {
-    const base = src.replace(/\/data\.json$/i, '');
-    const dataUrl = /data\.json$/i.test(src) ? src : `${base.replace(/\/$/, '')}/data.json`;
-    return { dataUrl, baseUrl: base.replace(/\/$/, '') };
+    // src puede apuntar al data.json directo o a la carpeta que lo contiene.
+    const hasFile = /data\.json$/i.test(src);
+    const baseAbs = new URL(hasFile ? src.replace(/data\.json$/i, '') : `${src.replace(/\/$/, '')}/`, window.location.href);
+    const dataUrl = new URL('data.json', baseAbs).href;
+    return { dataUrl, baseUrl: baseAbs.href };
   }
 
-  // Convención local: la demo vive en public/demo, el resto en propiedades/<id>.
-  const baseUrl = id === 'demo' ? 'demo' : `propiedades/${id}`;
-  return { dataUrl: `${baseUrl}/data.json`, baseUrl };
+  // Convención: la demo vive en ./demo, el resto en ./propiedades/<id>.
+  const baseRel = id === 'demo' ? 'demo/' : `propiedades/${encodeURIComponent(id)}/`;
+  // Resolución absoluta contra la ubicación actual (robusta en subrutas como /mapeo_3d/).
+  const baseAbs = new URL(baseRel, window.location.href);
+  const dataUrl = new URL('data.json', baseAbs).href;
+  return { dataUrl, baseUrl: baseAbs.href };
 }
 
 function showError(message) {
