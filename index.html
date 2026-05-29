@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Visor 3D — arriendamelo.cl</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="viewer" data-mode="3d">
+      <!-- Estado de carga / error -->
+      <div id="status" class="status" role="status" aria-live="polite">Cargando…</div>
+
+      <!-- Vista 3D orbital: se inyecta <model-viewer> desde JS -->
+      <div id="view-3d" class="view view-3d"></div>
+
+      <!-- Vista primera persona: Three.js (canvas inyectado desde JS) -->
+      <div id="view-fp" class="view view-fp" hidden></div>
+
+      <!-- Vista 2D: planta + lista de habitaciones -->
+      <div id="view-2d" class="view view-2d" hidden>
+        <div class="floorplan-wrap">
+          <img id="floorplan" class="floorplan" alt="Planta de la propiedad" />
+        </div>
+        <aside class="rooms-panel">
+          <h2 id="property-title" class="rooms-title"></h2>
+          <ul id="rooms-list" class="rooms-list"></ul>
+        </aside>
+      </div>
+
+      <!-- Controles: selector de modo -->
+      <div class="controls" role="tablist" aria-label="Modo de vista">
+        <button class="btn" type="button" data-mode="orbit" aria-pressed="true">Orbital</button>
+        <button class="btn" type="button" data-mode="fp" aria-pressed="false">Recorrer</button>
+        <button class="btn" type="button" data-mode="2d" aria-pressed="false">Planta 2D</button>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

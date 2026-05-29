@@ -1,0 +1,306 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel-2: #1f232c;
+  --text: #e8eaed;
+  --muted: #9aa0aa;
+  --accent: #2e9e6b;
+  --accent-ink: #ffffff;
+  --border: #2a2f3a;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.viewer {
+  position: relative;
+  width: 100%;
+  /* dvh = alto realmente visible en móvil (descuenta la barra del navegador).
+     vh queda como fallback para navegadores antiguos. */
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+/* Vistas */
+.view {
+  position: absolute;
+  inset: 0;
+}
+
+.view[hidden] {
+  display: none;
+}
+
+/* 3D */
+.view-3d model-viewer {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 30%, #20242e 0%, var(--bg) 70%);
+  --poster-color: transparent;
+}
+
+/* Hotspots / anotaciones */
+.hotspot {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(46, 158, 107, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+
+.hotspot[data-visible="false"] {
+  opacity: 0.35;
+}
+
+.hotspot .annotation {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.hotspot[data-open="true"] .annotation,
+.hotspot:hover .annotation {
+  opacity: 1;
+}
+
+/* Primera persona */
+.view-fp {
+  background: #10131a;
+  cursor: grab;
+  touch-action: none;
+}
+
+.view-fp canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fp-crosshair {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.fp-hint {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 92%;
+  text-align: center;
+}
+
+.joystick {
+  position: absolute;
+  left: 22px;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  touch-action: none;
+  z-index: 6;
+}
+
+.joystick-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 2D */
+.view-2d {
+  display: flex;
+  flex-direction: row;
+  background: var(--bg);
+}
+
+.floorplan-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  min-width: 0;
+}
+
+.floorplan {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.rooms-panel {
+  flex: 0 0 280px;
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.rooms-title {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+
+.rooms-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rooms-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.rooms-list .area {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Controles */
+.controls {
+  position: absolute;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 7;
+  display: flex;
+  gap: 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  color: var(--text);
+}
+
+.btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Botón AR nativo de model-viewer */
+.ar-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Estado */
+.status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  color: var(--muted);
+  z-index: 10;
+}
+
+.status[hidden] {
+  display: none;
+}
+
+.status.error {
+  color: #ff8a8a;
+}
+
+/* Responsivo: en móvil la planta queda arriba y la lista abajo */
+@media (max-width: 640px) {
+  .view-2d {
+    flex-direction: column;
+  }
+  .rooms-panel {
+    flex: 0 0 auto;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    max-height: 45%;
+  }
+}
