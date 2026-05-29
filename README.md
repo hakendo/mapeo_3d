@@ -11,16 +11,17 @@ Visor web que muestra propiedades inmobiliarias en **3D** (con **AR nativo en iP
 
 ## Requisitos
 
-- Node.js 18+ y npm.
+- Node.js 18+ y [pnpm](https://pnpm.io/) (gestor de paquetes del proyecto).
+  Si tienes Node moderno: `corepack enable` lo deja listo.
 - Para capturar propiedades: un iPhone/iPad con LiDAR (ej. iPhone 15 Pro Max).
 
 ## Desarrollo
 
 ```bash
-npm install
-npm run dev      # abre http://localhost:5173/?id=demo
-npm run build    # genera el sitio estático en dist/
-npm run preview  # sirve dist/ para probar el build
+pnpm install
+pnpm dev      # abre http://localhost:5173/?id=demo
+pnpm build    # genera el sitio estático en dist/
+pnpm preview  # sirve dist/ para probar el build
 ```
 
 La propiedad **demo** vive en `public/demo/` y se carga con `?id=demo`.
@@ -135,7 +136,7 @@ mapeo_3d/
 
 ## Despliegue
 
-Es un sitio estático. `npm run build` genera `dist/`, que puedes publicar en Cloudflare Pages,
+Es un sitio estático. `pnpm build` genera `dist/`, que puedes publicar en Cloudflare Pages,
 Netlify, Vercel o cualquier hosting estático. Apunta un subdominio (ej. `visor.arriendamelo.cl`) a
 ese despliegue.
 
