@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ejemplo de integración en una ficha de arriendamelo.cl</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 860px;
+        margin: 40px auto;
+        padding: 0 16px;
+        color: #222;
+      }
+      .property-card {
+        border: 1px solid #e2e2e2;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .property-3d {
+        width: 100%;
+        height: 480px;
+        border: 0;
+        display: block;
+      }
+      .property-info {
+        padding: 16px 20px;
+      }
+      code {
+        background: #f3f3f3;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Departamento demo — Providencia</h1>
+    <p>UF 3.500 · 2D / 2B · 65 m²</p>
+
+    <!--
+      ====== ESTO ES LO QUE SE PEGA EN LA FICHA DE arriendamelo.cl ======
+      Cambia el dominio por donde despliegues el visor (p. ej. visor.arriendamelo.cl)
+      y el ?id= por el identificador de la propiedad.
+    -->
+    <div class="property-card">
+      <iframe
+        class="property-3d"
+        src="../index.html?id=demo"
+        title="Tour 3D de la propiedad"
+        loading="lazy"
+        allow="xr-spatial-tracking; fullscreen"
+        allowfullscreen
+      ></iframe>
+      <div class="property-info">
+        <strong>Tour 3D interactivo.</strong>
+        Arrastra para girar · pellizca para acercar · en iPhone toca
+        <em>"Ver en tu espacio (AR)"</em> · usa el botón inferior para la planta 2D.
+      </div>
+    </div>
+
+    <h2>Cómo embeberlo</h2>
+    <p>En producción, una vez desplegado el visor, el snippet es una sola etiqueta:</p>
+    <pre><code>&lt;iframe
+  src="https://visor.arriendamelo.cl/?id=ID_DE_LA_PROPIEDAD"
+  style="width:100%;height:480px;border:0"
+  loading="lazy"
+  allow="xr-spatial-tracking; fullscreen"
+  allowfullscreen&gt;&lt;/iframe&gt;</code></pre>
+  </body>
+</html>

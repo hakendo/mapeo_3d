@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480">
+  <rect width="640" height="480" fill="#ffffff"/>
+  <!-- Muros exteriores -->
+  <rect x="40" y="40" width="560" height="400" fill="none" stroke="#222" stroke-width="6"/>
+  <!-- División de habitaciones -->
+  <line x1="320" y1="40" x2="320" y2="280" stroke="#222" stroke-width="4"/>
+  <line x1="40" y1="280" x2="600" y2="280" stroke="#222" stroke-width="4"/>
+  <!-- Puertas (huecos en gris claro) -->
+  <line x1="320" y1="150" x2="320" y2="200" stroke="#ffffff" stroke-width="6"/>
+  <line x1="240" y1="280" x2="300" y2="280" stroke="#ffffff" stroke-width="6"/>
+  <!-- Ventanas (azul) -->
+  <line x1="120" y1="40" x2="200" y2="40" stroke="#2e8bd6" stroke-width="6"/>
+  <line x1="440" y1="40" x2="520" y2="40" stroke="#2e8bd6" stroke-width="6"/>
+  <line x1="200" y1="440" x2="320" y2="440" stroke="#2e8bd6" stroke-width="6"/>
+  <!-- Etiquetas -->
+  <g font-family="system-ui, sans-serif" font-size="20" fill="#333" text-anchor="middle">
+    <text x="180" y="165">Dormitorio</text>
+    <text x="180" y="190" font-size="14" fill="#777">14.2 m²</text>
+    <text x="460" y="165">Living-comedor</text>
+    <text x="460" y="190" font-size="14" fill="#777">22.0 m²</text>
+    <text x="320" y="370">Cocina</text>
+    <text x="320" y="395" font-size="14" fill="#777">9.5 m²</text>
+  </g>
+  <!-- Leyenda -->
+  <g font-family="system-ui, sans-serif" font-size="13">
+    <line x1="40" y1="465" x2="70" y2="465" stroke="#2e8bd6" stroke-width="6"/>
+    <text x="78" y="470" fill="#555">Ventana exterior</text>
+  </g>
+</svg>

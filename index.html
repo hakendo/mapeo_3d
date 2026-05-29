@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Visor 3D — arriendamelo.cl</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="viewer" data-mode="3d">
+      <!-- Estado de carga / error -->
+      <div id="status" class="status" role="status" aria-live="polite">Cargando…</div>
+
+      <!-- Vista 3D: se inyecta <model-viewer> desde JS -->
+      <div id="view-3d" class="view view-3d"></div>
+
+      <!-- Vista 2D: planta + lista de habitaciones -->
+      <div id="view-2d" class="view view-2d" hidden>
+        <div class="floorplan-wrap">
+          <img id="floorplan" class="floorplan" alt="Planta de la propiedad" />
+        </div>
+        <aside class="rooms-panel">
+          <h2 id="property-title" class="rooms-title"></h2>
+          <ul id="rooms-list" class="rooms-list"></ul>
+        </aside>
+      </div>
+
+      <!-- Controles flotantes -->
+      <div class="controls">
+        <button id="toggle-mode" class="btn" type="button" aria-pressed="false">
+          Ver planta 2D
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "id": "demo",
+  "title": "Departamento demo — Providencia",
+  "model": "model.glb",
+  "iosModel": "model.usdz",
+  "floorplan": "floorplan.svg",
+  "rooms": [
+    { "name": "Dormitorio principal", "area": 14.2 },
+    { "name": "Living-comedor", "area": 22.0 },
+    { "name": "Cocina", "area": 9.5 }
+  ],
+  "annotations": [
+    { "label": "Ventana exterior (norte)", "position": "0.5 0 0", "normal": "1 0 0" },
+    { "label": "Acceso / puerta principal", "position": "0 -0.5 0.5", "normal": "0 0 1" },
+    { "label": "Muro hacia el exterior", "position": "0 0 -0.5", "normal": "0 0 -1" }
+  ]
+}
